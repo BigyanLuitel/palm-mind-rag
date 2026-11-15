@@ -6,12 +6,14 @@ from sqlalchemy import (
     Date,
     DateTime,
     Enum,
+    Index,
     Integer,
     String,
     Time,
     UniqueConstraint,
     Uuid,
     func,
+    text,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -43,11 +45,21 @@ def _enum_column(enum_class: type[enum.Enum]) -> Enum:
 
 class Document(Base):
     __tablename__ = "documents"
+    __table_args__ = (
+        # One live copy per file: failed uploads do not block a retry.
+        Index(
+            "uq_documents_live_sha256",
+            "sha256",
+            unique=True,
+            postgresql_where=text("status IN ('processing', 'ready')"),
+            sqlite_where=text("status IN ('processing', 'ready')"),
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     filename: Mapped[str] = mapped_column(String(255))
     size_bytes: Mapped[int] = mapped_column(Integer)
-    sha256: Mapped[str] = mapped_column(String(64), index=True)
+    sha256: Mapped[str] = mapped_column(String(64))
     chunk_strategy: Mapped[ChunkStrategy] = mapped_column(_enum_column(ChunkStrategy))
     chunk_size: Mapped[int] = mapped_column(Integer)
     chunk_overlap: Mapped[int] = mapped_column(Integer)

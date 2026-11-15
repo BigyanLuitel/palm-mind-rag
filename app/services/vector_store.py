@@ -1,11 +1,16 @@
 from uuid import UUID, uuid5
-
+from pydantic import BaseModel
 from qdrant_client import AsyncQdrantClient, models
 
 from app.core.config import Settings
 
 BATCH_SIZE = 100
-
+class RetrievedChunk(BaseModel):
+    doc_id: str
+    filename: str
+    chunk_index: int
+    text: str
+    score: float
 
 def create_qdrant_client(settings: Settings) -> AsyncQdrantClient:
     api_key = settings.qdrant_api_key.get_secret_value() if settings.qdrant_api_key else None
@@ -76,3 +81,19 @@ class VectorStore:
                 )
             ),
         )
+
+    async def search(
+        self, vector: list[float], limit: int, min_score: float
+    ) -> list[RetrievedChunk]:
+        """Return the closest chunks, best first, ignoring weak matches."""
+        response = await self._client.query_points(
+            collection_name=self._collection,
+            query=vector,
+            limit=limit,
+            score_threshold=min_score,
+            with_payload=True,
+        )
+        return [
+            RetrievedChunk.model_validate({**(point.payload or {}), "score": point.score})
+            for point in response.points
+        ]

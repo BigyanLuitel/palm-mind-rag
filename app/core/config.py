@@ -15,11 +15,14 @@ class Settings(BaseSettings):
     database_url: str
 
     groq_api_key: SecretStr
-    groq_model: str = "llama-3.3-70b-versatile"
+    groq_model: str = "openai/gpt-oss-120b"
 
     chunk_size: int = Field(default=800, ge=100)
     chunk_overlap: int = Field(default=100, ge=0)
     retrieval_top_k: int = Field(default=5, ge=1, le=20)
+    retrieval_min_score: float = Field(default=0.25, ge=0.0, le=1.0)
+    retrieval_score_margin: float = Field(default=0.2, ge=0.0, le=1.0)
+    booking_ttl_seconds: int = Field(default=1_800, ge=60)
     chat_history_length: int = Field(default=10, ge=1)
     chat_ttl_seconds: int = Field(default=86_400, ge=60)
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
