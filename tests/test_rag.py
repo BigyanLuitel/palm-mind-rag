@@ -89,15 +89,21 @@ async def test_min_score_and_margin_filter_the_chunks(
 async def test_follow_up_is_rewritten_and_both_questions_reach_the_prompt(
     store: VectorStore, embedder: FakeEmbedder, llm: ScriptedLLM
 ) -> None:
-    await fill(store, embedder, ["Refunds accepted within 30 days apply to sale items."])
+    await fill(
+        store, embedder, ["Refunds accepted within 30 days apply to sale items."]
+    )
     llm.rewrite = "Do refunds accepted within 30 days apply to sale items?"
     history = [
         ChatMessage(role="user", content="What is the refund window?"),
         ChatMessage(role="assistant", content="30 days."),
     ]
-    await make_rag(embedder, store, llm).answer("does that apply to sale items?", history)
+    await make_rag(embedder, store, llm).answer(
+        "does that apply to sale items?", history
+    )
 
-    assert embedder.queries == ["Do refunds accepted within 30 days apply to sale items?"]
+    assert embedder.queries == [
+        "Do refunds accepted within 30 days apply to sale items?"
+    ]
     messages = llm.answer_calls[0]
     assert messages[0].role == "system"
     assert [m.content for m in messages[1:3]] == [h.content for h in history]

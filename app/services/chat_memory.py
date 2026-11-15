@@ -1,4 +1,5 @@
-from typing import Literal
+from collections.abc import Awaitable
+from typing import Literal, cast
 
 from pydantic import BaseModel
 from redis.asyncio import Redis
@@ -12,7 +13,8 @@ class ChatMessage(BaseModel):
 
 
 def create_redis_client(settings: Settings) -> Redis:
-    return Redis.from_url(settings.redis_url, decode_responses=True)
+    client: Redis = Redis.from_url(settings.redis_url, decode_responses=True)
+    return client
 
 
 class ChatMemory:
@@ -27,7 +29,10 @@ class ChatMemory:
         return f"chat:{session_id}"
 
     async def get(self, session_id: str) -> list[ChatMessage]:
-        raw = await self._client.lrange(self._key(session_id), 0, -1)
+        # redis-py types this call as "list or awaitable"; the async client awaits it.
+        raw = await cast(
+            "Awaitable[list[str]]", self._client.lrange(self._key(session_id), 0, -1)
+        )
         return [ChatMessage.model_validate_json(item) for item in raw]
 
     async def add_exchange(

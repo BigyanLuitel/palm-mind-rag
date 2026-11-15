@@ -1,6 +1,5 @@
 from io import BytesIO
 from pathlib import Path
-import re
 
 from pypdf import PdfReader
 from pypdf.errors import PdfReadError
@@ -48,4 +47,3 @@ def _read_pdf(data: bytes) -> str:
     except PdfReadError as exc:
         raise UnreadableFileError("The PDF is corrupted or unreadable.") from exc
     return "\n\n".join(pages)
-

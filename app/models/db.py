@@ -22,12 +22,12 @@ class Base(DeclarativeBase):
     pass
 
 
-class ChunkStrategy(str, enum.Enum):
+class ChunkStrategy(enum.StrEnum):
     FIXED = "fixed"
     SENTENCE = "sentence"
 
 
-class DocumentStatus(str, enum.Enum):
+class DocumentStatus(enum.StrEnum):
     PROCESSING = "processing"
     READY = "ready"
     FAILED = "failed"
@@ -74,9 +74,7 @@ class Document(Base):
 
 class Booking(Base):
     __tablename__ = "bookings"
-    __table_args__ = (
-        UniqueConstraint("session_id", "booking_date", "booking_time"),
-    )
+    __table_args__ = (UniqueConstraint("session_id", "booking_date", "booking_time"),)
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     session_id: Mapped[str] = mapped_column(String(100), index=True)

@@ -48,11 +48,15 @@ class ScriptedLLM:
 
     @property
     def rewrite_calls(self) -> list[list[LLMMessage]]:
-        return [c for c in self.calls if "rewrite the user's last question" in c[0].content]
+        return [
+            c for c in self.calls if "rewrite the user's last question" in c[0].content
+        ]
 
     @property
     def answer_calls(self) -> list[list[LLMMessage]]:
-        return [c for c in self.calls if c[0].content.startswith("You answer questions")]
+        return [
+            c for c in self.calls if c[0].content.startswith("You answer questions")
+        ]
 
     async def complete(
         self,

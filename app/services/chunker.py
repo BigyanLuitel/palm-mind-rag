@@ -1,4 +1,6 @@
 import re
+
+
 def fixed_chunks(text: str, size: int, overlap: int) -> list[str]:
     """Cut text into windows of `size` characters; neighbours share `overlap`."""
     if overlap >= size:
@@ -13,6 +15,7 @@ def fixed_chunks(text: str, size: int, overlap: int) -> list[str]:
         if start + size >= len(text):
             break
     return chunks
+
 
 _SENTENCE_END = re.compile(r"(?<=[.!?])\s+|\n{2,}")
 

@@ -44,7 +44,12 @@ class BookingAnalysis(BaseModel):
     @field_validator("name", "email", "date", "time", "confirmation", mode="before")
     @classmethod
     def empty_means_none(cls, value: Any) -> Any:
-        if isinstance(value, str) and value.strip().lower() in {"", "null", "none", "n/a"}:
+        if isinstance(value, str) and value.strip().lower() in {
+            "",
+            "null",
+            "none",
+            "n/a",
+        }:
             return None
         return value
 

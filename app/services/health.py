@@ -45,13 +45,9 @@ class HealthChecker:
         )
         services = dict(zip(probes, results, strict=True))
         healthy = all(result == "ok" for result in results)
-        return HealthReport(
-            status="ok" if healthy else "degraded", services=services
-        )
+        return HealthReport(status="ok" if healthy else "degraded", services=services)
 
-    async def _run(
-        self, name: str, probe: Callable[[], Awaitable[object]]
-    ) -> str:
+    async def _run(self, name: str, probe: Callable[[], Awaitable[object]]) -> str:
         try:
             await asyncio.wait_for(probe(), self._timeout)
         except Exception as exc:  # any failure at all means "down"
@@ -64,7 +60,7 @@ class HealthChecker:
             await connection.execute(text("SELECT 1"))
 
     async def _ping_redis(self) -> None:
-        await self._redis.ping()  # type: ignore[misc]
+        await self._redis.ping()
 
     async def _ping_qdrant(self) -> None:
         await self._qdrant.get_collections()

@@ -1,10 +1,13 @@
 from uuid import UUID, uuid5
+
 from pydantic import BaseModel
 from qdrant_client import AsyncQdrantClient, models
 
 from app.core.config import Settings
 
 BATCH_SIZE = 100
+
+
 class RetrievedChunk(BaseModel):
     doc_id: str
     filename: str
@@ -12,8 +15,11 @@ class RetrievedChunk(BaseModel):
     text: str
     score: float
 
+
 def create_qdrant_client(settings: Settings) -> AsyncQdrantClient:
-    api_key = settings.qdrant_api_key.get_secret_value() if settings.qdrant_api_key else None
+    api_key = (
+        settings.qdrant_api_key.get_secret_value() if settings.qdrant_api_key else None
+    )
     return AsyncQdrantClient(url=settings.qdrant_url, api_key=api_key)
 
 
@@ -94,6 +100,8 @@ class VectorStore:
             with_payload=True,
         )
         return [
-            RetrievedChunk.model_validate({**(point.payload or {}), "score": point.score})
+            RetrievedChunk.model_validate(
+                {**(point.payload or {}), "score": point.score}
+            )
             for point in response.points
         ]

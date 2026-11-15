@@ -39,12 +39,14 @@ class GroqClient:
         json_mode: bool = False,
     ) -> str:
         options: dict[str, Any] = {}
+        # The SDK wants its own TypedDict message types; plain dicts are accepted.
+        payload: Any = [message.model_dump() for message in messages]
         if json_mode:
             options["response_format"] = {"type": "json_object"}
         try:
             response = await self._client.chat.completions.create(
                 model=self._model,
-                messages=[message.model_dump() for message in messages],
+                messages=payload,
                 temperature=temperature,
                 **options,
             )

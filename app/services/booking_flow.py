@@ -156,7 +156,10 @@ class BookingFlow:
             return BookingTurn(
                 handled=True,
                 status="none",
-                reply="You have already booked that date and time, so nothing new was added.",
+                reply=(
+                    "You have already booked that date and time, "
+                    "so nothing new was added."
+                ),
             )
         await self._states.clear(session_id)
         return BookingTurn(

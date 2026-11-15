@@ -33,9 +33,7 @@ class ChatService:
             sources = result.sources
 
         await self._memory.add_exchange(session_id, message, answer)
-        return ChatResult(
-            answer=answer, sources=sources, booking_status=turn.status
-        )
+        return ChatResult(answer=answer, sources=sources, booking_status=turn.status)
 
     async def clear(self, session_id: str) -> None:
         await self._memory.clear(session_id)

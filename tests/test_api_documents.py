@@ -47,9 +47,7 @@ async def test_same_file_again_returns_200_and_duplicate(
 
 
 async def test_fixed_strategy_with_custom_sizes(client: httpx.AsyncClient) -> None:
-    response = await upload(
-        client, strategy="fixed", chunk_size=100, chunk_overlap=20
-    )
+    response = await upload(client, strategy="fixed", chunk_size=100, chunk_overlap=20)
     assert response.status_code == 201
     body = response.json()
     assert body["chunk_strategy"] == "fixed"

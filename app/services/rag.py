@@ -85,7 +85,7 @@ def _build_user_prompt(
 ) -> str:
     documents = "\n\n".join(
         f'<document name="{c.filename}" chunk="{c.chunk_index}">\n'
-        f'{c.text.replace("</document>", "")}\n</document>'
+        f"{c.text.replace('</document>', '')}\n</document>"
         for c in chunks
     )
     asked = f"Question: {question}"
